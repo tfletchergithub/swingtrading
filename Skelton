@@ -1,0 +1,42 @@
+import requests
+from bs4 import BeautifulSoup
+import yfinance as yf
+from datetime import datetime, timedelta
+
+def get_earnings_release_date(symbol, quarter, year):
+    # Implement logic to extract earnings release date from Nasdaq.com or SEC website
+    # Return a datetime object for the release date
+
+def get_estimated_actual_eps(symbol, quarter, year):
+    # Implement logic to extract estimated and actual EPS from the chosen source
+    # Return the values
+
+def get_stock_prices(symbol, date):
+    # Use yfinance to fetch stock prices for the given date
+    stock_data = yf.download(symbol, start=date, end=date)
+    open_price = stock_data['Open'][0]
+    close_price = stock_data['Close'][0]
+    return open_price, close_price
+
+def main():
+    # Example usage for a specific stock and quarter
+    symbol = 'AAPL'
+    year = 2023
+    quarter = 1
+
+    # Get earnings release date
+    release_date = get_earnings_release_date(symbol, quarter, year)
+
+    # Get estimated and actual EPS
+    estimated_eps, actual_eps = get_estimated_actual_eps(symbol, quarter, year)
+
+    # Get stock prices at release date, 30, 60, and 90 days after
+    release_stock_prices = get_stock_prices(symbol, release_date)
+    day30_stock_prices = get_stock_prices(symbol, release_date + timedelta(days=30))
+    day60_stock_prices = get_stock_prices(symbol, release_date + timedelta(days=60))
+    day90_stock_prices = get_stock_prices(symbol, release_date + timedelta(days=90))
+
+    # Print or process the extracted data as needed
+
+if __name__ == "__main__":
+    main()
