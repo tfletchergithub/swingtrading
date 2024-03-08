@@ -1,22 +1,16 @@
-import requests
-from bs4 import BeautifulSoup
+import yfinance as yf
 import pandas as pd
-from openpyxl import Workbook
 
 def get_stock_data(ticker):
-    base_url = f'https://finviz.com/quote.ashx?t={ticker}'
-    response = requests.get(base_url)
-    soup = BeautifulSoup(response.text, 'html.parser')
+    stock = yf.Ticker(ticker)
+    info = stock.info
 
-    # Extract relevant data from the website
-    # You may need to inspect the website structure to find the correct elements
-    # The example below is just a placeholder, and you may need to adjust it based on the website's structure.
-    data = {
-        'Stock Symbol/Ticker': ticker,
-        'Quarter 1 Earnings Report Release Date': '...',
-        'Quarter 1 Estimated EPS score': '...',
-        'Quarter 1 Actual EPS score': '...',
-        # ... Add more fields as needed
+    data = {'Stock Symbol/Ticker': ticker,
+        'Quarter 1 Earnings Report Release Date': info.get('earningsDate', {}).get('startfmt', 'N/A'),
+        'Quarter 1 Estimated EPS score': info.get('epsEstimate', 'N/A'),
+        'Quarter 1 Actual EPS score': info.get('eps', 'N/A'),
+
+        'Quarter 2 Earnings Report Release Date': info.get('nextEarningsDate', 'N/A'),
     }
 
     return data
@@ -36,13 +30,18 @@ def save_to_excel(data, output_file):
 
 def main():
     tickers = input("Enter stock tickers separated by a space: ").upper().split()
-    
+
     stock_data = fetch_stock_data(tickers)
 
     # Save the data to an Excel file
     output_file = 'stock_data.xlsx'
     save_to_excel(stock_data, output_file)
-    
+
+    print(f"Stock data has been saved to {output_file}")
+
+if __name__ == "__main__":
+    main()
+
     print(f"Stock data has been saved to {output_file}")
 
 if __name__ == "__main__":
