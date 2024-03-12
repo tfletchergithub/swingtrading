@@ -1,0 +1,20 @@
+import openpyxl as ox
+import yfinance as yf
+import pandas as pd
+import subprocess
+from datetime import datetime
+
+tick = yf.Ticker(input("Enter ticker symbol: "))
+
+end_date = pd.to_datetime('today').strftime('%Y-%m-%d')
+start_date = (pd.to_datetime('today') - pd.DateOffset(years=1)).strftime('%Y-%m-%d')
+
+hist = tick.history(start=start_date, end=end_date)
+
+openPrices = hist['Open']
+closePrices = hist['Close']
+
+print(openPrices)
+print(closePrices)
+
+
