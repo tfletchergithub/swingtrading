@@ -9,10 +9,12 @@ import platform
 
 ALPHA_VANTAGE_API_KEY = 'Q3SZ39CBG6O5ALJT'
 
+
 # Step 1: Retrieve historical stock data using Yahoo Finance
 def get_historical_data(ticker, start_date, end_date):
     stock_data = yf.download(ticker, start=start_date, end=end_date)
     return stock_data
+
 
 # Step 2: Retrieve earnings data using the Alpha Vantage API
 def get_eps_data(ticker):
@@ -35,9 +37,7 @@ def get_eps_data(ticker):
         return eps_data
     else:
         raise Exception(f"Error retrieving earnings data: {data}")
-    
 
-    
 
 # Step 3: Save data to an Excel file
 # Step 3: Save data to an Excel file
@@ -64,7 +64,9 @@ def save_to_excel(historical_data, eps_data, ticker):
     eps_sheet = workbook.create_sheet(title='EPSData')
 
     # Add headers for EPS data
-    eps_sheet.append(['Fiscal Date','Earnings Reported Date', 'Reported EPS', 'Estimated EPS','EPS Difference', 'EPS Surprise (%)', 'Combined Price'])
+    eps_sheet.append(
+        ['Fiscal Date', 'Earnings Reported Date', 'Reported EPS', 'Estimated EPS', 'EPS Difference', 'EPS Surprise (%)',
+         'Open Price', 'Close Price'])
 
     # Apply the date style to the first row
     for cell in eps_sheet['1:1']:
@@ -73,8 +75,12 @@ def save_to_excel(historical_data, eps_data, ticker):
     # Populate EPS data
     for index, row in enumerate(dataframe_to_rows(eps_data, index=False, header=False)):
         # Combine Open and Close prices and append to the EPS data row
-        combined_price = historical_data.iloc[index]['Open'] + historical_data.iloc[index]['Close']
-        row.append(combined_price)
+        open_price = historical_data.iloc[index]['Open']
+        close_price = historical_data.iloc[index]['Close']
+
+        row.append(open_price)
+        row.append(close_price)
+
         eps_sheet.append(row)
 
     file_path = f'{ticker}_data.xls'
@@ -95,6 +101,7 @@ def open_excel(file_path):
         subprocess.Popen(['open', file_path])
     else:
         print(f"Unsupported operating system: {system}")
+
 
 # Step 5: Main program
 def main():
@@ -119,8 +126,7 @@ def main():
     except Exception as e:
         print(f"Error retrieving data: {e}")
 
+
 # Step 6: Execute the main program
 if __name__ == "__main__":
     main()
-
-
