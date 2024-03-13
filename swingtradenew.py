@@ -7,7 +7,7 @@ from openpyxl.styles import NamedStyle  # Import NamedStyle for formatting
 import subprocess
 import platform
 
-ALPHA_VANTAGE_API_KEY = 'YOUR_ALPHA_VANTAGE_API_KEY'
+ALPHA_VANTAGE_API_KEY = 'Q3SZ39CBG6O5ALJT'
 
 # Step 1: Retrieve historical stock data using Yahoo Finance
 def get_historical_data(ticker, start_date, end_date):
@@ -35,7 +35,11 @@ def get_eps_data(ticker):
         return eps_data
     else:
         raise Exception(f"Error retrieving earnings data: {data}")
+    
 
+    
+
+# Step 3: Save data to an Excel file
 # Step 3: Save data to an Excel file
 def save_to_excel(historical_data, eps_data, ticker):
     workbook = Workbook()
@@ -60,21 +64,25 @@ def save_to_excel(historical_data, eps_data, ticker):
     eps_sheet = workbook.create_sheet(title='EPSData')
 
     # Add headers for EPS data
-    eps_sheet.append(['Reported Date', 'Fiscal Date Ending', 'EPS Surprise (%)', 'Reported EPS', 'Estimated EPS'])
-
-    file_path = f'{ticker}_data.xlsx'
+    eps_sheet.append(['Fiscal Date','Earnings Reported Date', 'Reported EPS', 'Estimated EPS','EPS Difference', 'EPS Surprise (%)', 'Combined Price'])
 
     # Apply the date style to the first row
     for cell in eps_sheet['1:1']:
         cell.style = date_style
 
     # Populate EPS data
-    for row in dataframe_to_rows(eps_data, index=False, header=False):
+    for index, row in enumerate(dataframe_to_rows(eps_data, index=False, header=False)):
+        # Combine Open and Close prices and append to the EPS data row
+        combined_price = historical_data.iloc[index]['Open'] + historical_data.iloc[index]['Close']
+        row.append(combined_price)
         eps_sheet.append(row)
+
+    file_path = f'{ticker}_data.xls'
 
     # Save the Excel file
     workbook.save(file_path)
     return file_path
+
 
 # Step 4: Open Excel file using the default application
 def open_excel(file_path):
@@ -114,3 +122,5 @@ def main():
 # Step 6: Execute the main program
 if __name__ == "__main__":
     main()
+
+
